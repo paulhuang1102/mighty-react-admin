@@ -20,8 +20,6 @@ export default class HttpAgentManager {
         this.agents[v] = new HttpAgent({ resource: v, apiUrl: endpoint });
       }
     });
-
-    console.log(this.agents);
   }
 
   agents: AgentMap = {};

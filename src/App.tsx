@@ -1,4 +1,4 @@
-import { Admin, Resource, ShowGuesser } from "react-admin";
+import { Admin, Layout, LayoutProps, Resource, ShowGuesser } from "react-admin";
 import PostIcon from "@mui/icons-material/Book";
 import UserIcon from "@mui/icons-material/Group";
 
@@ -9,9 +9,18 @@ import { PostEdit } from "./smple/postEdit";
 import { PostCreate } from "./smple/postCreate";
 import { Dashboard } from "./smple/dashboard";
 import { authProvider } from "./authProvider";
+import { MyAppBar } from "./layouts/myAppbar";
+
+const MyLayout = (props: LayoutProps) => <Layout {...props} appBar={MyAppBar} />;
 
 export const App = () => (
-  <Admin dataProvider={dataProvider} authProvider={authProvider} dashboard={Dashboard}>
+  <Admin
+    dataProvider={dataProvider}
+    authProvider={authProvider}
+    dashboard={Dashboard}
+    layout={MyLayout}
+    darkTheme={{ palette: { mode: "dark" } }}
+  >
     <Resource
       name="posts"
       list={PostList}
