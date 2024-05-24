@@ -28,3 +28,7 @@ npm run build
 ### Gettinh started
 1. Create .env file and add VITE_JSON_SERVER_URL=YOUR_URL
 
+### Docker
+- docker build -t react-admin .
+- docker run -p 3000:80 react-admin
+

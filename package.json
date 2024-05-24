@@ -10,6 +10,7 @@
     "format": "prettier --write ./src"
   },
   "dependencies": {
+    "ra-data-simple-rest": "^4.16.17",
     "react": "^18.2.0",
     "react-admin": "^4.16.0",
     "react-dom": "^18.2.0"

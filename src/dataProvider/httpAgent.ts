@@ -12,9 +12,19 @@ import {
 } from "react-admin";
 import { stringify } from "query-string";
 
-const httpClient = fetchUtils.fetchJson;
+export const httpClient = (url: string, options: any = {}) => {
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: "application/json" });
+  }
 
-interface HttpAgentInterface {
+  options.headers.set(
+    "Authorization",
+    `Bearer ${localStorage.getItem("token")}`
+  );
+  return fetchUtils.fetchJson(url, options);
+};
+
+export interface HttpAgentInterface {
   resource: string;
   apiUrl: string;
 }
@@ -25,24 +35,26 @@ export default class HttpAgent {
     this.apiUrl = apiUrl;
   }
 
-  private resource: string;
-  private apiUrl: string;
+  protected resource: string;
+  protected apiUrl: string;
 
   public getList(params: GetListParams) {
     const query = this.getQuery(params);
 
     const url = `${this.apiUrl}/${this.resource}?${query}`;
 
-    return httpClient(url).then(({ headers, json }) => ({
-      data: json,
-      total: this.parseTotal(headers),
-    }));
+    return httpClient(url).then(({ headers, json }) => {
+      return {
+        data: json.data,
+        total: this.parseTotal(headers),
+      };
+    });
   }
 
   public getOne(params: GetOneParams) {
     return httpClient(`${this.apiUrl}/${this.resource}/${params.id}`).then(
       ({ json }) => ({
-        data: json,
+        data: json.data,
       })
     );
   }
@@ -52,7 +64,7 @@ export default class HttpAgent {
       filter: JSON.stringify({ id: params.ids }),
     };
     const url = `${this.apiUrl}/${this.resource}?${stringify(query)}`;
-    return httpClient(url).then(({ json }) => ({ data: json }));
+    return httpClient(url).then(({ json }) => ({ data: json.data }));
   }
 
   public getManyReference(params: GetManyReferenceParams) {
@@ -61,7 +73,7 @@ export default class HttpAgent {
     const url = `${this.apiUrl}/${this.resource}?${query}`;
 
     return httpClient(url).then(({ headers, json }) => ({
-      data: json,
+      data: json.data,
       total: this.parseTotal(headers),
     }));
   }
@@ -70,7 +82,7 @@ export default class HttpAgent {
     return httpClient(`${this.apiUrl}/${this.resource}/${params.id}`, {
       method: "PUT",
       body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json }));
+    }).then(({ json }) => ({ data: json.data }));
   }
 
   public updateMany(params: UpdateManyParams) {
@@ -80,7 +92,7 @@ export default class HttpAgent {
     return httpClient(`${this.apiUrl}/${this.resource}?${query}}`, {
       method: "PUT",
       body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json }));
+    }).then(({ json }) => ({ data: json.data }));
   }
 
   public create(params: CreateParams) {
@@ -95,7 +107,7 @@ export default class HttpAgent {
   public delete(params: DeleteParams) {
     return httpClient(`${this.apiUrl}/${this.resource}/${params.id}`, {
       method: "DELETE",
-    }).then(({ json }) => ({ data: json }));
+    }).then(({ json }) => ({ data: json.data }));
   }
 
   public deleteMany(params: DeleteManyParams) {
@@ -104,15 +116,15 @@ export default class HttpAgent {
     };
     return httpClient(`${this.apiUrl}/${this.resource}?${stringify(query)}`, {
       method: "DELETE",
-    }).then(({ json }) => ({ data: json }));
+    }).then(({ json }) => ({ data: json.data }));
   }
 
   protected getQuery(params: GetListParams | GetManyReferenceParams): string {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
 
-    if ('id' in params) {
-        params.target = params.id.toString()
+    if ("id" in params) {
+      params.target = params.id.toString();
     }
 
     const query = {
@@ -125,7 +137,6 @@ export default class HttpAgent {
   }
 
   protected parseTotal(headers: Headers) {
-    
     return parseInt(
       (headers.get("content-range") || "0").split("/").pop() || "0",
       10
