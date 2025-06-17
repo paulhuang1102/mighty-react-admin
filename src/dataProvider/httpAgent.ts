@@ -19,7 +19,7 @@ export const httpClient = (url: string, options: any = {}) => {
 
   options.headers.set(
     "Authorization",
-    `Bearer ${localStorage.getItem("token")}`
+    `Bearer ${localStorage.getItem("accessToken")}`
   );
   return fetchUtils.fetchJson(url, options);
 };
@@ -45,8 +45,8 @@ export default class HttpAgent {
 
     return httpClient(url).then(({ headers, json }) => {
       return {
-        data: json.data,
-        total: this.parseTotal(headers),
+        data: json.data.items || json.data,
+        total: json.data.total || this.parseTotal(headers),
       };
     });
   }
@@ -120,8 +120,8 @@ export default class HttpAgent {
   }
 
   protected getQuery(params: GetListParams | GetManyReferenceParams): string {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { page, perPage } = params.pagination!;
+    const { field, order } = params.sort!;
 
     if ("id" in params) {
       params.target = params.id.toString();
@@ -131,6 +131,8 @@ export default class HttpAgent {
       sort: JSON.stringify([field, order]),
       range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
       filter: JSON.stringify(params.filter),
+      page,
+      limit: perPage,
     };
 
     return stringify(query);

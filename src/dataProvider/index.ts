@@ -1,12 +1,17 @@
 import { DataProvider } from "react-admin";
 import HttpAgentManager from "./httpAgentManager";
 import { RESOURCE, endpoint } from "../config";
-import { RoleHttpAgent } from "../role/data";
+import { RoleHttpAgent } from "../roles/data";
+import { ProductHttpAgent } from "../products/data";
 
 const manager = new HttpAgentManager({
   overrides: {
     [RESOURCE.roles]: new RoleHttpAgent({
       resource: RESOURCE.roles,
+      apiUrl: endpoint,
+    }),
+    [RESOURCE.products]: new ProductHttpAgent({
+      resource: RESOURCE.products,
       apiUrl: endpoint,
     }),
   },

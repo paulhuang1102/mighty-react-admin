@@ -3,7 +3,7 @@ import { endpoint } from "../config";
 export const authProvider: AuthProvider = {
   // called when the user attempts to log in
   login: ({ username, password }) => {
-    const request = new Request(endpoint + "/login", {
+    const request = new Request(endpoint + "/auth/login", {
       method: "POST",
       body: JSON.stringify({ name: username, password }),
       headers: new Headers({ "Content-Type": "application/json" }),
@@ -16,22 +16,22 @@ export const authProvider: AuthProvider = {
         return response.json();
       })
       .then(({ data }) => {
-        const { token } = data;
+        const { accessToken } = data;
         // store the token in local storage
-        localStorage.setItem("token", token);
+        localStorage.setItem("accessToken", accessToken);
         // localStorage.setItem("roles", roles);
 
         // const p = getPermissionsFromRoles(roles);
 
         // localStorage.setItem("permissions", JSON.stringify(p));
       })
-      .catch(() => {
-        throw new Error("Network error");
+      .catch((e) => {
+        throw new Error(e.message);
       });
   },
   // called when the user clicks on the logout button
   logout: () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("roles");
     localStorage.removeItem("permissions");
     return Promise.resolve();
@@ -46,7 +46,7 @@ export const authProvider: AuthProvider = {
   },
   // called when the user navigates to a new location, to check for authentication
   checkAuth: () => {
-    return localStorage.getItem("token") ? Promise.resolve() : Promise.reject();
+    return localStorage.getItem("accessToken") ? Promise.resolve() : Promise.reject();
   },
   // called when the user navigates to a new location, to check for permissions / roles
   getPermissions: () => {

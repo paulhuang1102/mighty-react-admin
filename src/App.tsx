@@ -6,8 +6,16 @@ import { Dashboard } from "./smple/dashboard";
 import { authProvider, MyPermissions } from "./authProvider";
 import { MyAppBar } from "./layouts/myAppbar";
 import { RESOURCE } from "./config";
-import { AccountList, AccountCreate, AccountEdit, AccountShow } from "./account";
-import { RoleCreate, RoleEdit, RoleList, RoleShow } from "./role";
+import {
+  AccountList,
+  AccountCreate,
+  AccountEdit,
+  AccountShow,
+} from "./account";
+import { RoleCreate, RoleList, RoleShow } from "./roles";
+import ProductCreate from "./products/productCreate";
+import { ProductList } from "./products/productList";
+import { ProductEdit } from "./products/productEdit";
 
 const MyLayout = (props: LayoutProps) => (
   <Layout {...props} appBar={MyAppBar} />
@@ -51,8 +59,15 @@ export const App = () => (
           create={
             permissions.canCreate(RESOURCE.roles) ? RoleCreate : undefined
           }
-          edit={permissions.canEdit(RESOURCE.roles) ? RoleEdit : undefined}
+          // edit={permissions.canEdit(RESOURCE.roles) ? RoleEdit : undefined}
           show={permissions.canRead(RESOURCE.roles) ? RoleShow : undefined}
+        />
+
+        <Resource
+          name="products"
+          list={permissions.canRead(RESOURCE.roles) ? ProductList : undefined}
+          create={ProductCreate}
+          edit={permissions.canEdit(RESOURCE.roles) ? ProductEdit : undefined}
         />
       </>
     )}

@@ -1,6 +1,7 @@
 export const RESOURCE = {
     accounts: 'accounts',
     roles: 'roles',
+    products: 'products',
     // resources: 'resources',
     // samples: 'samples',
     // posts: 'posts',
